@@ -1,4 +1,5 @@
-﻿public class Program
+﻿using Ecole;    
+public class Program
 {
     public static string Mention(double moyenne)
     {
@@ -16,6 +17,16 @@
 
     public static void Main()
     {
-        Exercice3.Run();
-    }
+        var ada = new Etudiant("Lovelace", "Ada", 4)
+        {
+        Naissance = new DateOnly(1815, 12, 10)
+        };
+        ada.AjouterNote(15);
+        ada.AjouterNote(16);
+        Console.WriteLine(ada); // appelle ToString()
+        ada.Annee = 5; // autorisé
+        // ada.Nom = "Byron"; // doit provoquer une erreur de compilation
+        // ada.Naissance = ...; // idem    }
+}
+
 }
