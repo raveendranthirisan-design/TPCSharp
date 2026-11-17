@@ -1,3 +1,5 @@
+namespace Geometrie;
+
 public class Cercle : Forme
 {
     public double Rayon { get; }
@@ -19,5 +21,10 @@ public class Cercle : Forme
     public override double Perimetre()
     {
         return 2 * Math.PI * Rayon;
+    }
+
+    public override string Decrire()
+    {
+        return base.Decrire() + ", rayon = " + Rayon.ToString("F2");
     }
 }

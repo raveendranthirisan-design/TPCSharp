@@ -1,3 +1,5 @@
+namespace Geometrie;
+
 public abstract class Forme : IDessinable, IComparable<Forme>
 {
     public string Nom { get; }

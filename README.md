@@ -1,1 +1,1 @@
-actuellement au point 4. Classe Etudiant et propriétés 
+actuellement au point 5. Héritage et interfaces : les formes

@@ -1,3 +1,5 @@
+namespace Geometrie;
+
 public class Rectangle : Forme
 {
     public double Largeur { get; }
