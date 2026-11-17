@@ -16,8 +16,6 @@
 
     public static void Main()
     {
-        int m = 17;
-        Console.WriteLine($"{m} => {Mention(m)}");
-        
+        Exercice3.Run();
     }
 }
