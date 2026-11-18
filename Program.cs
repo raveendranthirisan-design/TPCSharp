@@ -38,5 +38,6 @@ public class Program
 
         Exercice3.Run();
         Exercice5.Run();
+        Exercice6.Run();
     }
 }

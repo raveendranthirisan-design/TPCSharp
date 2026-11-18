@@ -6,6 +6,7 @@ public class Cercle : Forme
     // Le rayon (strictement positif).
     public double Rayon { get; }
 
+
     // Cree un cercle.
     public Cercle(double rayon) : base("Cercle")
     {

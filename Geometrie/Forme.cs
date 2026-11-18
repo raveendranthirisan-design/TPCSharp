@@ -6,6 +6,9 @@ public abstract class Forme : IDessinable, IComparable<Forme>
     // Le nom de la forme (lecture seule).
     public string Nom { get; }
 
+    // Le centre de la forme (0, 0 si on ne le donne pas).
+    public Point2D Centre { get; init; }
+
     // Constructeur protected : seules les classes filles peuvent l'appeler.
     protected Forme(string nom)
     {

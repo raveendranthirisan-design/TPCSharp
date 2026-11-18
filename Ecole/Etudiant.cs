@@ -1,11 +1,11 @@
 namespace Ecole;
 
 // Un etudiant avec son nom, son prenom, son annee et ses notes.
-public class Etudiant
+public class Etudiant : IEquatable<Etudiant>
 {
     // les notes sont privees pour que personne ne puisse les changer sans passer par AjouterNote
     private List<double> _notes = new List<double>();
-    private int annee = 1;
+    private int _annee = 1;
 
     // Le nom (lecture seule, fixe par le constructeur).
     public string Nom { get; }
@@ -17,14 +17,14 @@ public class Etudiant
     // L'annee d'etudes, entre 1 et 5.
     public int Annee
     {
-        get { return annee; }
+        get { return _annee; }
         set
         {
             if (value < 1 || value > 5)
             {
                 throw new ArgumentOutOfRangeException("value");
             }
-            annee = value;
+            _annee = value;
         }
     }
 
@@ -86,6 +86,28 @@ public class Etudiant
             somme += note;
         }
         return somme / _notes.Count;
+    }
+
+    // Deux etudiants sont egaux s'ils ont le meme nom, le meme prenom et la meme date de naissance.
+    public bool Equals(Etudiant? autre)
+    {
+        if (autre is null)
+        {
+            return false;
+        }
+        return Nom == autre.Nom && Prenom == autre.Prenom && Naissance == autre.Naissance;
+    }
+
+    // Version avec object : on reutilise l'autre Equals (si ce n'est pas un Etudiant, as donne null donc false).
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as Etudiant);
+    }
+
+    // Le hash doit utiliser les memes donnees que Equals, sinon le HashSet ne marche pas.
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Nom, Prenom, Naissance);
     }
 
     // Texte de l'etudiant, par exemple "Ada LOVELACE (M1) : 15,50". Annees 1 a 3 = L1 a L3, 4 et 5 = M1 et M2.
