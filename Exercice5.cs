@@ -1,7 +1,9 @@
 using Geometrie;
 
+// Teste le polymorphisme avec une liste de formes.
 public static class Exercice5
 {
+    // Trie les formes par aire, les dessine, puis calcule l'aire totale et la forme qui a le plus grand perimetre.
     public static void Run()
     {
         List<Forme> formes = [new Cercle(1), new Rectangle(2, 5), new Carre(3), new Cercle(2.5)];

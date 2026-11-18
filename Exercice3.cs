@@ -1,27 +1,31 @@
+// Exemples avec List, Dictionary et le filtrage par motif.
 public static class Exercice3
 {
+    // Affiche les stats d'une liste de notes, puis celles de chaque etudiant du dictionnaire.
     public static void Run()
     {
-        // List<double> notes = [12, 15.5, 9, 18];
+        // accolades pour que les variables ne se melangent pas avec celles du dessous
+        {
+            List<double> notes = [12, 15.5, 9, 18];
 
-        // double somme = 0;
-        // double min = notes[0];
-        // double max = notes[0];
+            double somme = 0;
+            double min = notes[0];
+            double max = notes[0];
 
-        // foreach (double note in notes)
-        // {
-        //     somme += note;
-        //     if (note < min) min = note;
-        //     if (note > max) max = note;
-        // }
+            foreach (double note in notes)
+            {
+                somme += note;
+                if (note < min) min = note;
+                if (note > max) max = note;
+            }
 
-        // double moyenne = somme / notes.Count;
+            double moyenne = somme / notes.Count;
 
-        // string mention = Program.Mention(moyenne);
-        // Console.WriteLine("Moyenne : " + moyenne.ToString("F2") + " => " + mention);
-        // Console.WriteLine($"Note minimale : {min}");
-        // Console.WriteLine($"Note maximale : {max}");
-
+            string mention = Program.Mention(moyenne);
+            Console.WriteLine("Moyenne : " + moyenne.ToString("F2") + " => " + mention);
+            Console.WriteLine($"Note minimale : {min}");
+            Console.WriteLine($"Note maximale : {max}");
+        }
 
         Dictionary<string, List<double>> dico = new Dictionary<string, List<double>>();
 
@@ -46,7 +50,7 @@ public static class Exercice3
             Console.WriteLine(nom + " : " + notes.Count + " notes, moyenne " + moyenne.ToString("F2") + " => " + mention);
         }
 
-        // Question 4 : lire dico["Inconnu"]
+        // on cherche un etudiant qui n'existe pas, avec TryGetValue pour eviter l'erreur
         if (dico.TryGetValue("Inconnu", out var notesInconnu))
         {
             Console.WriteLine("Inconnu a " + notesInconnu.Count + " notes");
@@ -56,7 +60,7 @@ public static class Exercice3
             Console.WriteLine("Inconnu n'existe pas dans le dictionnaire");
         }
 
-        // Question 5 : on teste Decrire sur six valeurs
+        // on teste Decrire sur six valeurs
         Console.WriteLine(Decrire(4));
         Console.WriteLine(Decrire(7));
         Console.WriteLine(Decrire(""));
@@ -65,6 +69,7 @@ public static class Exercice3
         Console.WriteLine(Decrire(null));
     }
 
+    // Decrit un objet grace au filtrage par motif.
     static string Decrire(object? o)
     {
         return o switch
