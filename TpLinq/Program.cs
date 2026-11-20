@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-// Q1 + Q2 : OfType<Note>() écarte les null et donne un List<Note> (et non List<Note?>)
+// lecture de notes.csv : OfType<Note>() enleve les null et donne un List<Note>
 List<Note> notes = File.ReadLines("notes.csv")
     .Skip(1)
     .Select((ligne, i) =>
@@ -11,9 +11,8 @@ List<Note> notes = File.ReadLines("notes.csv")
     })
     .OfType<Note>()
     .ToList();
-    
 
-// Q3 : toutes les lignes sont valides, pas besoin de Parser ni de filtre
+// etudiants.csv : toutes les lignes sont valides
 List<Inscrit> etudiants = File.ReadLines("etudiants.csv")
     .Skip(1)
     .Select(l => l.Split(','))
@@ -23,6 +22,7 @@ List<Inscrit> etudiants = File.ReadLines("etudiants.csv")
 Console.WriteLine($"{notes.Count} notes valides");
 Console.WriteLine($"{etudiants.Count} inscrits");
 
+// Transforme une ligne en Note, ou null si la ligne est invalide.
 static Note? Parser(string ligne)
 {
     var c = ligne.Split(',');
@@ -33,32 +33,25 @@ static Note? Parser(string ligne)
     return new Note(c[0], c[1], c[2], v, coef);
 }
 
-
- List<Note> copieList =  new List<Note>(notes);
- copieList.Sort( (a, b) => {
+// tri sur une copie : par matiere, puis par valeur decroissante
+List<Note> copieList = new List<Note>(notes);
+copieList.Sort((a, b) =>
+{
     int r = string.Compare(a.Matiere, b.Matiere);
-    if(r  != 0)
-     {
-         return r;
-     }
-     else
-     {
-        r = b.Valeur.CompareTo(a.Valeur);
+    if (r != 0)
+    {
         return r;
-     }
- } );
+    }
+    else
+    {
+        return b.Valeur.CompareTo(a.Valeur);
+    }
+});
+// TODO : RemoveAll pour les notes de Reseau
 
- 
-
-
-
-
-
-
-// 2.1 notes d'Algo, triées par valeur décroissante
-
+// 2.1 Q1 : notes d'Algo, valeur decroissante
 var algo = notes
-    .Where(n => n.Matiere == "Algo") 
+    .Where(n => n.Matiere == "Algo")
     .OrderByDescending(n => n.Valeur)
     .ToList();
 
@@ -66,7 +59,7 @@ Console.WriteLine("--- Notes d'Algo (décroissant) ---");
 var afficher = Modele.AffichageNote();
 foreach (Note n in algo) afficher(n);
 
-
+// 2.1 Q2 : matieres sans doublon, triees
 var matiere = notes
     .Select(n => n.Matiere)
     .Distinct()
@@ -76,17 +69,28 @@ var matiere = notes
 Console.WriteLine("--- Matières ---");
 foreach (string m in matiere) Console.WriteLine(m);
 
-// List<Note> faibles =Modele.Filtrer(notes,n => n.Valeur  < 10);
-// List<Note> ada = Modele.Filtrer(notes,n => n.Prenom == "Ada" && n.Valeur >= 15);
 
-// // Q : la lambda stockée dans une variable. Type : Func<Note, bool>
+var faible =  notes
+    .Where(n => n.Valeur <10)
+    .Select(n => new {n.Prenom, n.Valeur})
+    .ToList();
+
+
+foreach (var x in faible) Console.WriteLine($"{x.Prenom} : {x.Valeur}");
+
+
+
+
+
+// 1.1 / 1.2 : tests de Filtrer
+// List<Note> faibles = Modele.Filtrer(notes, n => n.Valeur < 10);
+// List<Note> ada = Modele.Filtrer(notes, n => n.Prenom == "Ada" && n.Valeur >= 15);
+
+// var c = n => ... ne compile pas (CS8917), il faut typer n
 // var plusDe15 = (Note n) => n.Valeur >= 15;
 // List<Note> excellentes = Modele.Filtrer(notes, plusDe15);
 
 // List<Note> audessus14 = Modele.Filtrer(notes, Modele.AuDessusDe(14));
 // Console.WriteLine($"{audessus14.Count} notes >= 14");
-
 // Console.WriteLine($"{ada.Count} notes d'Ada supérieures à 15");
 // Console.WriteLine($"{excellentes.Count} notes >= 15 ({plusDe15.GetType().Name})");
-
-
