@@ -1,14 +1,14 @@
 public record Note(string Nom, string Prenom, string Matiere, double Valeur, int Coef);
 public record Inscrit(string Nom, string Prenom, string Promo);
 
-
 public static class Modele
 {
+    // Garde les notes qui verifient le critere (comme Where, mais avec une boucle).
     public static List<Note> Filtrer(List<Note> source, Func<Note, bool> critere)
     {
         List<Note> notes = new List<Note>();
 
-        foreach(Note n in source)
+        foreach (Note n in source)
         {
             if (critere(n))
             {
@@ -19,32 +19,27 @@ public static class Modele
         return notes;
     }
 
-
+    // Vrai si la note est en Algo.
     public static bool EstEnAlgo(Note n)
     {
-        if(n.Matiere == "Algo") return true;
-        else return false;
+        return n.Matiere == "Algo";
     }
 
-
+    // Renvoie une fonction qui calcule valeur x coef.
     public static Func<Note, double> Ponderation()
     {
-       
-        return  n => n.Valeur * n.Coef;
+        return n => n.Valeur * n.Coef;
     }
 
+    // Renvoie une Action qui affiche une note : Ada · Algo · 15
     public static Action<Note> AffichageNote()
     {
-        
         return n => Console.WriteLine($"{n.Prenom} · {n.Matiere} · {n.Valeur}");
     }
 
-
+    // Renvoie un critere : la note doit etre >= au seuil.
     public static Func<Note, bool> AuDessusDe(double seuil)
     {
         return n => n.Valeur >= seuil;
     }
-
-    
-
 }
