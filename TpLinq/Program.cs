@@ -76,7 +76,7 @@ var faible =  notes
     .ToList();
 
 
-foreach (var x in faible) Console.WriteLine($"{x.Prenom} : {x.Valeur}");
+foreach (var x in faible) Console.WriteLine($" je test {x.Prenom} : {x.Valeur}");
 
 
 
