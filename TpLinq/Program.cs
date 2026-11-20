@@ -70,15 +70,27 @@ Console.WriteLine("--- Matières ---");
 foreach (string m in matiere) Console.WriteLine(m);
 
 
+
+
+
 var faible =  notes
     .Where(n => n.Valeur <10)
     .Select(n => new {n.Prenom, n.Valeur})
     .ToList();
 
 
-foreach (var x in faible) Console.WriteLine($" je test {x.Prenom} : {x.Valeur}");
+foreach (var x in faible) Console.WriteLine($" je d {x.Prenom} : {x.Valeur}");
 
 
+// Version tuple
+
+var faibleTuple =  notes
+    .Where(n => n.Valeur <10)
+    .Select(n => (n.Prenom, n.Valeur))
+    .ToList();
+
+
+foreach (var d in faibleTuple) Console.WriteLine($" thiri {d.Prenom} : {d.Valeur}");
 
 
 
