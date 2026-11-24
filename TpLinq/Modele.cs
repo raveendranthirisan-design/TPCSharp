@@ -1,6 +1,13 @@
+// Une note d'un etudiant dans une matiere.
 public record Note(string Nom, string Prenom, string Matiere, double Valeur, int Coef);
+
+// Un etudiant inscrit dans une promo.
 public record Inscrit(string Nom, string Prenom, string Promo);
 
+// Le bulletin d'un etudiant : son prenom et la liste de ses valeurs.
+public record Bulletin(string Prenom, List<double> Valeurs);
+
+// Les methodes de la partie delegues et lambdas.
 public static class Modele
 {
     // Garde les notes qui verifient le critere (comme Where, mais avec une boucle).
