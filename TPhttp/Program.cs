@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Diagnostics;
-using System.Net.Http.Json;
 
 // on charge promo.json s'il existe, sinon on importe notes.csv et on cree promo.json
 List<Note> notes;
@@ -50,25 +49,45 @@ string[] resultats = await Task.WhenAll(a, b, c);
 foreach (string r in resultats) Console.WriteLine(r);
 Console.WriteLine($"Durée : {chrono.ElapsedMilliseconds} ms");
 
-// un seul HttpClient pour tout le programme, avec l'adresse de base de l'API
-HttpClient client = new HttpClient { BaseAddress = new Uri("https://geo.api.gouv.fr/") };
-
-// on demande les communes du code postal 35000, GetFromJsonAsync deserialise directement en List<Commune>
-List<Commune>? communes = await client.GetFromJsonAsync<List<Commune>>("communes?codePostal=35000");
-
-Console.WriteLine("--- Communes du 35000 ---");
-foreach (Commune commune in communes ?? new List<Commune>())
+// on demande les communes de deux codes postaux a l'API (le HttpClient unique est dans ApiGeo)
+foreach (string codePostal in new[] { "35000", "29200" })
 {
-    Console.WriteLine($"{commune.Nom} ({commune.Code}) : {commune.Population} habitants");
+    Console.WriteLine($"--- Communes du {codePostal} ---");
+    foreach (Commune commune in await ApiGeo.CommunesAsync(codePostal))
+    {
+        Console.WriteLine($"{commune.Nom} ({commune.Code}) : {commune.Population} habitants");
+    }
 }
 
+// l'API renvoie [] pour 99999, donc CommunesAsync renvoie une liste vide (et jamais null)
+List<Commune> aucune = await ApiGeo.CommunesAsync("99999");
+Console.WriteLine($"Communes du 99999 : {aucune.Count}");
+
 // on lit etudiants.csv, le code postal est la 4e colonne
-// List<Inscrit> etudiants = File.ReadLines("etudiants.csv")
-//     .Skip(1)
-//     .Select(l => l.Split(','))
-//     .Select(c => new Inscrit(c[0], c[1], c[2], c[3]))
-//     .ToList();
-// Console.WriteLine($"{etudiants.Count} inscrits");
+List<Inscrit> etudiants = File.ReadLines("etudiants.csv")
+    .Skip(1)
+    .Select(l => l.Split(','))
+    .Select(col => new Inscrit(col[0], col[1], col[2], col[3]))
+    .ToList();
+Console.WriteLine($"{etudiants.Count} inscrits");
+
+// version parallele : Select lance toutes les requetes d'un coup, WhenAll attend qu'elles soient toutes finies
+chrono.Restart();
+string[] lignes = await Task.WhenAll(etudiants.Select(inscrit => CommuneDeAsync(inscrit)));
+long dureeParallele = chrono.ElapsedMilliseconds;
+
+Console.WriteLine("--- Commune de chaque étudiant ---");
+foreach (string ligne in lignes) Console.WriteLine(ligne);
+
+// version l'une apres l'autre : on attend chaque requete avant de lancer la suivante
+chrono.Restart();
+foreach (Inscrit inscrit in etudiants)
+{
+    await CommuneDeAsync(inscrit);
+}
+long dureeSequentielle = chrono.ElapsedMilliseconds;
+
+Console.WriteLine($"Parallèle : {dureeParallele} ms / l'une après l'autre : {dureeSequentielle} ms");
 
 // tests du record Note : les deux lignes levent une ArgumentOutOfRangeException
 // try { new Note("Lovelace", "Ada", "Algo", 25, 3); }
@@ -118,6 +137,26 @@ static List<Note> LectureNote()
     }
 
     return notes;
+}
+
+// Renvoie la ligne a afficher pour un inscrit, par exemple « Ada Lovelace (M1) : Rennes ».
+static async Task<string> CommuneDeAsync(Inscrit inscrit)
+{
+    string commune;
+    try
+    {
+        List<Commune> communes = await ApiGeo.CommunesAsync(inscrit.CodePostal);
+        // aucune commune pour ce code postal (Margaret Hamilton, 99999)
+        commune = communes.Count > 0
+            ? string.Join(", ", communes.Select(co => co.Nom))
+            : "commune inconnue";
+    }
+    catch (HttpRequestException)
+    {
+        // si la requete de cet inscrit echoue, on ne fait pas echouer le WhenAll des autres
+        commune = "commune inconnue (requête échouée)";
+    }
+    return $"{inscrit.Prenom} {inscrit.Nom} ({inscrit.Promo}) : {commune}";
 }
 
 // Simule une operation lente (comme un appel reseau) qui dure 1 seconde.
