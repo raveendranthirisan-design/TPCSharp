@@ -53,4 +53,22 @@ foreach( var e in moyenne)
         Console.WriteLine($"{e.Nom} {e.Moy}");
     }
 
+
+ var parcourir = db.Etudiants.Include(e => e.Notes).ToList();
+
+ foreach(var e in parcourir)
+    {
+        Console.WriteLine($"{e.Notes.Count}");
+
+    }
+
+
+var MoyPonderee = db.Etudiants.Where(e => e.Notes.Count() > 0).Select(e => new { Nom = e.Nom , Moy = e.Notes.Sum(s => s.Valeur * s.Coef) / e.Notes.Sum(n => n.Coef)}).OrderByDescending(x => x.Moy);
+
+
+ foreach(var e in MoyPonderee)
+    {
+Console.WriteLine($"{e.Nom} {e.Moy:F2}");
+
+    }
 }
